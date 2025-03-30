@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>West America Road Trip Planner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 80vh;
+            width: 100%;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .routes {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .route-btn {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .route-btn:hover {
+            background-color: #2980b9;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>West America Road Trip Interactive Map</h1>
+        <div id="map"></div>
+        
+        <div class="routes">
+            <button class="route-btn" onclick="showClassicWesternLoop()">Classic Western Loop</button>
+            <button class="route-btn" onclick="showPacificCoastHighway()">Pacific Coast Highway</button>
+            <button class="route-btn" onclick="showSouthwestDesertTour()">Southwest Desert Tour</button>
+        </div>
+        
+        <div class="footer">
+            <p>Check out the <a href="mindmap.md">detailed mindmap</a> for more planning information.</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([37.8, -122.4], 5);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Major destinations
+        const destinations = [
+            { name: "San Francisco, CA", coords: [37.7749, -122.4194] },
+            { name: "Los Angeles, CA", coords: [34.0522, -118.2437] },
+            { name: "San Diego, CA", coords: [32.7157, -117.1611] },
+            { name: "Las Vegas, NV", coords: [36.1699, -115.1398] },
+            { name: "Grand Canyon, AZ", coords: [36.0544, -112.1401] },
+            { name: "Zion National Park, UT", coords: [37.2982, -113.0263] },
+            { name: "Bryce Canyon, UT", coords: [37.6283, -112.1677] },
+            { name: "Arches National Park, UT", coords: [38.7331, -109.5925] },
+            { name: "Yosemite National Park, CA", coords: [37.8651, -119.5383] },
+            { name: "Death Valley, CA", coords: [36.5323, -116.9325] },
+            { name: "Seattle, WA", coords: [47.6062, -122.3321] },
+            { name: "Portland, OR", coords: [45.5051, -122.6750] },
+            { name: "Salt Lake City, UT", coords: [40.7608, -111.8910] },
+            { name: "Denver, CO", coords: [39.7392, -104.9903] },
+            { name: "Sedona, AZ", coords: [34.8697, -111.7610] },
+            { name: "Antelope Canyon, AZ", coords: [36.8619, -111.3743] },
+            { name: "Monument Valley, UT/AZ", coords: [36.9838, -110.1119] },
+            { name: "Olympic National Park, WA", coords: [47.8021, -123.6044] },
+            { name: "Crater Lake, OR", coords: [42.9446, -122.1090] },
+            { name: "Lake Tahoe, CA/NV", coords: [39.0968, -120.0324] }
+        ];
+        
+        // Add markers for all destinations
+        destinations.forEach(dest => {
+            L.marker(dest.coords)
+                .addTo(map)
+                .bindPopup(`<b>${dest.name}</b>`);
+        });
+        
+        // Route polylines
+        let currentRoute = null;
+        
+        function clearRoutes() {
+            if (currentRoute) {
+                map.removeLayer(currentRoute);
+            }
+        }
+        
+        function showClassicWesternLoop() {
+            clearRoutes();
+            const routeCoords = [
+                [37.7749, -122.4194], // San Francisco
+                [37.8651, -119.5383], // Yosemite
+                [36.5323, -116.9325], // Death Valley
+                [36.1699, -115.1398], // Las Vegas
+                [36.0544, -112.1401], // Grand Canyon
+                [37.2982, -113.0263], // Zion
+                [37.6283, -112.1677], // Bryce Canyon
+                [40.7608, -111.8910], // Salt Lake City
+                [39.0968, -120.0324], // Lake Tahoe
+                [37.7749, -122.4194]  // San Francisco
+            ];
+            
+            currentRoute = L.polyline(routeCoords, {color: 'blue', weight: 3}).addTo(map);
+            map.fitBounds(currentRoute.getBounds());
+        }
+        
+        function showPacificCoastHighway() {
+            clearRoutes();
+            const routeCoords = [
+                [47.6062, -122.3321], // Seattle
+                [47.8021, -123.6044], // Olympic National Park
+                [45.5051, -122.6750], // Portland
+                [41.7128, -124.1642], // Redwoods (approximation)
+                [37.7749, -122.4194], // San Francisco
+                [36.2704, -121.8081], // Big Sur
+                [34.0522, -118.2437], // Los Angeles
+                [32.7157, -117.1611]  // San Diego
+            ];
+            
+            currentRoute = L.polyline(routeCoords, {color: 'green', weight: 3}).addTo(map);
+            map.fitBounds(currentRoute.getBounds());
+        }
+        
+        function showSouthwestDesertTour() {
+            clearRoutes();
+            const routeCoords = [
+                [36.1699, -115.1398], // Las Vegas
+                [37.2982, -113.0263], // Zion
+                [37.6283, -112.1677], // Bryce Canyon
+                [36.9838, -110.1119], // Monument Valley
+                [36.8619, -111.3743], // Antelope Canyon
+                [36.0544, -112.1401], // Grand Canyon
+                [34.8697, -111.7610], // Sedona
+                [36.5323, -116.9325], // Death Valley
+                [36.1699, -115.1398]  // Las Vegas
+            ];
+            
+            currentRoute = L.polyline(routeCoords, {color: 'red', weight: 3}).addTo(map);
+            map.fitBounds(currentRoute.getBounds());
+        }
+        
+        // Show classic western loop by default
+        showClassicWesternLoop();
+    </script>
+</body>
+</html>
